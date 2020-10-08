@@ -9,11 +9,10 @@ var jwt = require("jsonwebtoken");
 
 var bodyparser = require("body-parser");
 
-var bodyparser = require("body-parser");
 const { Router } = require("express");
 var router = express.Router();
 
-process.env.SECRET_KEY = "secret";
+process.env.SECRET_KEY = "chat";
 
 //
 // LOGIN PAGE
@@ -22,13 +21,14 @@ let status = 200;
 
 router.post("/login", (req, res) => {
     const { password, email } = req.body;
+    const name = email;
 console.log(req.body);
-      dbConnection.execute("SELECT * FROM `users` WHERE `email`=?", [email])
+      dbConnection.execute("SELECT * FROM `users` WHERE `name`=?", [name])
         .then(([rows]) => {
             if(rows.length ===0){
-              console.log('Email not found')
+              console.log('name not found')
               result.status=404;
-              result.msg="User Does Not Exists with this Email";
+              result.msg="User Does Not Exists with this name";
               res.send(result);
 
             //  res.status(404).send("")
@@ -46,7 +46,7 @@ console.log(req.body);
                 //    res.send(token)
                 result.status = 200;
                 // Create a token
-                const payload = { user: email };
+                const payload = { user: name };
                 const options = {
                   expiresIn: "2d",
                 };
@@ -58,11 +58,8 @@ console.log(req.body);
                 result.msg="Login Successfull";
                 result.status = status;
                 result.user = {
-                    first_name: rows[0].first_name,
-                    last_name: rows[0].last_name,
-                    institute: rows[0].institute,
-                    email: rows[0].email,
-                    contact: rows[0].contact,
+                    name: rows[0].name,
+                    created: rows[0].created,
                   };
               
               } else {

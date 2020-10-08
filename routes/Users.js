@@ -14,27 +14,32 @@ const { Router } = require('express');
 router.post('/register', (req, res) => {
   console.log(req.body);
   const created = new Date()
-var result;
-  const { first_name, last_name, email,institute,contact, password } = req.body;
+  let result = {};
+  let status = 200;
+  
 
-    dbConnection.execute('SELECT `email` FROM `users` WHERE `email`=?', [email])
+  const { email, password } = req.body;
+var name = email;
+    dbConnection.execute('SELECT `name` FROM `users` WHERE `name`=?', [name])
     .then(([rows]) => {
         if(rows.length > 0){
           console.log(rows.length)
-          result="This Email is Already in Use";
+          result.status=404;
+          result.msg="User Does Not Exists with this name";
          res.send(result);
         }
        else{
     //TODO bcrypt
            bcrypt.hash(password, 12).then((hash_pass) => {
         // INSERTING USER INTO DATABASE
-           dbConnection.execute("INSERT INTO `users`(`first_name`,`last_name`, `email`,`institute`, `contact`,`password`,`created`) VALUES(?,?,?,?,?,?,?)",
-            [first_name,last_name, email,institute, contact,hash_pass,created])
+           dbConnection.execute("INSERT INTO `users`(`name`,`password`,`created`) VALUES(?,?,?)",
+            [name,hash_pass,created])
            .then(result => {
           console.log("done");
-          result="your account has been created successfully... ";
-
-          res.send(result);
+          result.status=404;
+          result.msg="your account has been created successfully... ";
+         console.log(result)
+         res.send(result);
        
         }).catch(err => {
             // THROW INSERTING USER ERROR'S

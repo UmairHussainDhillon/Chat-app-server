@@ -30,7 +30,6 @@ app.use(
 app.use(cookieParser("secretcode"));
 app.use(passport.initialize());
 app.use(passport.session());
-require("./models/passportConfig")(passport);
 
 //----------------------------------------- END OF MIDDLEWARE---------------------------------------------------
 
@@ -38,58 +37,19 @@ require("./models/passportConfig")(passport);
 
 // Routes
 
-var userRouter = require('./routes/Users');
-app.use('/users',userRouter);
+var LoginRouter = require('./routes/Login');
+app.use('/',LoginRouter);
 
-//
-var fetch = require('./Databases/fetch')
-app.use('/', fetch);
-
-//
-var Update = require('./Databases/update')
-app.use('/', Update);
-
-//
-var GetCourses = require('./routes/courses/getcourses')
-app.use('/', GetCourses);
-
-
-//
-
-
-//
-var AddInstructor = require('./routes/AddInstructor')
-app.use('/', AddInstructor);
-
-//
-var TimetableRouter = require('./routes/courses/Timetable')
-app.use('/', TimetableRouter);
-//
-var RegisterRouter = require('./routes/Users')
-app.use('/', RegisterRouter);
-//
-var LoginRouter = require('./routes/Login')
-app.use('/users', LoginRouter);
-
-//
-var ResetRouter = require('./routes/auth')
-app.use('/', ResetRouter);
-
-//
-var PreferenceRouter = require('./routes/AddPreference')
-app.use('/', PreferenceRouter);
-
-//
-var ClashRouter = require('./routes/AddClashes')
-app.use('/', ClashRouter);
-//
+// Regiser Route
+var RegisterRouter = require('./routes/Users');
+app.use('/',RegisterRouter);
 
 app.get("/user", (req, res) => {
   res.send("its Working !"); // To check Route
 });
 //----------------------------------------- END OF ROUTES---------------------------------------------------
 //Start Server
-PORT= process.env.PORT||5000;
+PORT= process.env.PORT||4000;
 app.listen(PORT, () => {
   console.log("Server Has Started on PORT: "+ PORT);
 });
