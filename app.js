@@ -5,11 +5,28 @@ const passportLocal = require("passport-local").Strategy;
 const cookieParser = require("cookie-parser");
 const bcrypt = require("bcryptjs");
 const session = require("express-session");
+const dbConnection = require('./Databases/connect');
 const bodyParser = require("body-parser");
 const app = express();
 //----------------------------------------- END OF IMPORTS---------------------------------------------------
 
-//DB CONNECTION
+var http = require("http").createServer(app);
+var io = require("socket.io")(http);
+io.on('connection', socket => { 
+  console.log("User Connected...",socket.id)
+  var response = "Ali"
+socket.emit("FromAPI", response); 
+// listen from client inside IO "connection" event
+socket.on("send_message", function (data) {
+  console.log(data)
+ dbConnection.execute("INSERT INTO `messages`(`message`,`sender`,`reciever`) VALUES(?,?,?)",
+    [data.message,data.sender,data.receiver])
+    .then(result => {
+    // send event to receiver
+    io.emit("new_message", data);});
+})
+
+});
 
 // Middleware
 app.use(bodyParser.json());
@@ -44,12 +61,13 @@ app.use('/',LoginRouter);
 var RegisterRouter = require('./routes/Users');
 app.use('/',RegisterRouter);
 
+
 app.get("/user", (req, res) => {
   res.send("its Working !"); // To check Route
 });
 //----------------------------------------- END OF ROUTES---------------------------------------------------
 //Start Server
 PORT= process.env.PORT||4000;
-app.listen(PORT, () => {
+http.listen(PORT, () => {
   console.log("Server Has Started on PORT: "+ PORT);
 });

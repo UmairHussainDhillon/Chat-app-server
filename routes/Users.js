@@ -18,8 +18,7 @@ router.post('/register', (req, res) => {
   let status = 200;
   
 
-  const { email, password } = req.body;
-var name = email;
+  const { name, password } = req.body;
     dbConnection.execute('SELECT `name` FROM `users` WHERE `name`=?', [name])
     .then(([rows]) => {
         if(rows.length > 0){
@@ -50,7 +49,33 @@ var name = email;
     }})
 });
 // END OF REGISTER ROUTE
-
+router.get('/users', function (req, res) {
+  dbConnection.query("select * from users") 
+  .then(([rows]) => {
+    if(rows.length===0){
+      data="No data"
+      res.send(data)
+    }
+    else{
+      data = rows;
+      console.log("Users List Sent: ")
+      res.send(data)
+    }
+  })
+});
+router.get('/messages', function (req, res) {
+  dbConnection.query("select * from messages") 
+  .then(([rows]) => {
+    if(rows.length===0){
+      data="No data"
+      res.send(data)
+    }
+    else{
+      data = rows;
+      res.send(data)
+    }
+  })
+});
 /*
 users.get('/dashboard', (req, res) => {
   var decoded = jwt.verify(req.headers['authorization'], process.env.SECRET_KEY)

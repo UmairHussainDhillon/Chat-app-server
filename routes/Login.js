@@ -20,8 +20,7 @@ let result = {};
 let status = 200;
 
 router.post("/login", (req, res) => {
-    const { password, email } = req.body;
-    const name = email;
+    const { password, name } = req.body;
 console.log(req.body);
       dbConnection.execute("SELECT * FROM `users` WHERE `name`=?", [name])
         .then(([rows]) => {
